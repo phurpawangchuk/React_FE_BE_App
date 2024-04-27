@@ -45,6 +45,7 @@ function Login() {
                 console.log("Response: ", res.data.token);
                 localStorage.setItem('token', res.data.token)
                 localStorage.setItem('userId', res.data.userId)
+                localStorage.setItem('username', res.data.username);
                 toast.success("Login successful");
                 window.location.reload(); // Reload the page
                 window.location.href = '/'; // Redirect to the home page

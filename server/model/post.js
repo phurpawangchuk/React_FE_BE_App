@@ -15,6 +15,10 @@ const PostSchema = Schema(
             type: String,
             required: false
         },
+        published: {
+            type: Boolean,
+            default: true
+        },
         creator: {
             type: Schema.Types.ObjectId,
             ref: 'User',

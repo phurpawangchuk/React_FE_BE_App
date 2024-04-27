@@ -65,7 +65,7 @@ function UpdatePost() {
                 navigate('/post');
             })
             .catch(err => {
-                toast.error("An error occurred while updating the post");
+                toast.error("Error:" + err.message);
                 //  setError('An error occurred while updating the post.');
                 console.log(err);
             });

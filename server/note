@@ -2,7 +2,7 @@ npm init -y //generetae json package
 npm install express mongoose cors nodemon
 npm start
 
-npm install --save express-validator bcryptjs 
+npm install --save express-validator bcryptjs multer
 
 npm install bootstrap react-tooltip
 

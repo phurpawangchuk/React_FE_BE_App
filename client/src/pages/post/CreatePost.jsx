@@ -1,57 +1,60 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
 function CreatePost() {
-    const [title, setTitle] = useState('app');
-    const [content, setContent] = useState('test@cc.com');
-    const [imageUrl, setImageUrl] = useState('34');
     const [error, setError] = useState('');
-
     const navigate = useNavigate();
 
-    const handleTitleChange = (event) => {
-        setTitle(event.target.value);
-        validateForm();
-    };
+    const [image, setImage] = useState(null);
+    const [userData, setUserData] = useState({
+        title: '',
+        content: '',
+        image: ''
+    });
 
-    const handleContentChange = (event) => {
-        setContent(event.target.value);
-        validateForm();
-    };
+    const handleInput = (event) => {
+        const { name, value, type } = event.target;
 
-    const handleImageUrlChange = (event) => {
-        setImageUrl(event.target.value);
-        validateForm();
-    };
-
-    const validateForm = () => {
-        if (title && content) {
-            setFormValid(true);
+        if (type === 'file') {
+            // Handle image file input
+            const file = event.target.files[0];
+            setImage(event.target.files[0]);
+            setUserData((prevValues) => ({
+                ...prevValues,
+                [name]: file
+            }));
         } else {
-            setFormValid(false);
+            // Handle regular input fields
+            setUserData((prevValues) => ({
+                ...prevValues,
+                [name]: value
+            }));
         }
-    };
+    }
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        if (!title || !content) {
+        if (!userData.title || !userData.content) {
             setError('Please fill in all fields.');
             return;
         }
 
-        axios.post("http://localhost:3000/api/posts/", {
-            title: title,
-            content: content,
-            imageUrl: '',
-            userId: localStorage.getItem('userId')
-        }, {
-                headers: {
-                    Authorization: 'Bearer ' + localStorage.getItem('token')
-                }
-            })
+        const formData = new FormData();
+        formData.append('title', userData.title);
+        formData.append('content', userData.content);
+        formData.append('userId', localStorage.getItem('userId'));
+        formData.append('image', image);
+
+        console.log(formData);
+
+        axios.post("http://localhost:3000/api/posts/", formData, {
+            headers: {
+                Authorization: 'Bearer ' + localStorage.getItem('token')
+            }
+        })
             .then(result => {
                 console.log(result.data);
                 toast.success("Data created successfully");
@@ -65,18 +68,17 @@ function CreatePost() {
     return (
         <div className="d-flex vh-100 bg-primary justify-content-center align-items-center">
             <div className="w-50 bg-white rounded p-3">
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} encType="multipart/form-data">
                     <h2>Add Post</h2>
                     {error && <div className="alert alert-danger">{error}</div>}
                     <div className="mb-2">
                         <label htmlFor="title">Title</label>
                         <input
                             type="text"
-                            id="title"
+                            name="title"
                             placeholder='Enter title'
-                            className={`form-control ${!title && error ? 'is-invalid' : 'is-valid'}`}
-                            value={title}
-                            onChange={handleTitleChange}
+                            className={`form-control ${!userData.title && error ? 'is-invalid' : 'is-valid'}`}
+                            onChange={handleInput}
                         />
                     </div>
 
@@ -84,26 +86,34 @@ function CreatePost() {
                         <label htmlFor="content">Content</label>
                         <textarea
                             type="content"
-                            id="content"
+                            name="content"
                             placeholder='Enter content'
-                            className={`form-control ${(!content) && error ? 'is-invalid' : 'is-valid'}`}
-                            value={content}
-                            onChange={handleContentChange}
+                            className={`form-control ${(!userData.content) && error ? 'is-invalid' : 'is-valid'}`}
+                            onChange={handleInput}
                         />
                     </div>
 
                     <div className="mb-2">
-                        <label htmlFor="age">Imagee</label>
+                        <label htmlFor="image">Avatar</label>
                         <input
                             type="file"
-                            id="image"
-                            placeholder='Enter image'
-                            onChange={handleImageUrlChange}
+                            name="image"
+                            className='form-control'
+                            accept="image/*"
+                            onChange={handleInput}
                         />
                     </div>
+
+                    {image && (
+                        <div>
+                            <img src={URL.createObjectURL(image)} alt="Selected" width="200" />
+                        </div>
+                    )}
 
                     <div className="mb-2">
                         <button className='btn btn-success'>Submit</button>
+                        <Link to={`/post/`} className='btn btn-success mx-2'>Back</Link>
+
                     </div>
                 </form>
             </div>

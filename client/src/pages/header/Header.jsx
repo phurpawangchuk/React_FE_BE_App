@@ -15,7 +15,9 @@ function Header() {
 
     return (
         <nav className='nav'>
-            <p className=''>Welcome Me</p>
+            {localStorage.getItem('username') != undefined && (
+                <p className=''>Welcome {localStorage.getItem('username')}</p>
+            )}
             <ul>
 
                 <li className='link'><Link to='/' className='link'

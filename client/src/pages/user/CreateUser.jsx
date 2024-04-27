@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
@@ -140,6 +140,7 @@ function CreateUser() {
 
                     <div className="mb-2">
                         <button className='btn btn-success'>Submit</button>
+                        <Link to={`/user/`} className='btn btn-success mx-2'>Back</Link>
                     </div>
                 </form>
             </div>

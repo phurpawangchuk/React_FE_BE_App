@@ -36,6 +36,7 @@ function Post() {
                 }
             })
                 .then((response) => {
+                    console.log(response.data.posts)
                     setData(response.data.posts);
                     setPostDetail(response.data.posts);
                 })
@@ -51,6 +52,8 @@ function Post() {
     });
 
     const handleDelete = ((id) => {
+        console.log(localStorage.getItem('userId'))
+
         const confirm = window.confirm("Do you want to delete?");
         if (confirm) {
             axios.delete(`http://localhost:3000/api/posts/${id}`,
@@ -63,7 +66,7 @@ function Post() {
                     setPosts(res.data.posts);
                     toast.success("Deleted successfully");
                 }).catch(err => {
-                    toast.error("Login to access the users");
+                    toast.error("Unauthorized to data.");
                     console.error('Unauthorized.');
                 });
         }
@@ -88,10 +91,10 @@ function Post() {
                             <th>Title</th>
                             <th>Content</th>
                             <th>Image</th>
+                            <th>Creator</th>
                             <th>Action</th>
                         </tr>
                     </thead>
-
 
                     <tbody>
                         {
@@ -99,10 +102,24 @@ function Post() {
                                 <tr key={post._id}>
                                     <td>{post.title}</td>
                                     <td>{post.content}</td>
-                                    <td>{post.imageUrl}</td>
                                     <td>
-                                        <Link to={`/post/update/${post._id}`} className='btn btn-sm btn-success mx-2'>Edit</Link>
-                                        <button onClick={() => handleDelete(post._id)} className='btn btn-sm btn-danger'>Delete</button>
+                                        {post.image && <img src={`http://localhost:3000/public/uploads/${post.image}`} width='100px' alt="Post Image" />}
+                                    </td>
+                                    <td>{post.creator ? post.creator.name : ''}</td>
+                                    <td>
+                                        {post.creator._id !== localStorage.getItem('userId') ? (
+                                            <>
+                                                <button disabled className='btn btn-sm btn-success mx-2'>Edit</button>
+                                                <button onClick={() => handleDelete(post._id)} disabled className='btn btn-sm btn-danger'>Delete</button>
+                                            </>
+                                        ) : (
+                                                <>
+                                                    <Link to={`/post/update/${post._id}`} className='btn btn-sm btn-success'>Edit</Link>
+                                                    <button onClick={() => handleDelete(post._id)} className='btn btn-sm btn-info mx-2'>Toggle</button>
+                                                    <button onClick={() => handleDelete(post._id)} className='btn btn-sm btn-danger'>Delete</button>
+                                                </>
+                                            )}
+
                                         <Link to={`/post/postdetails/${post._id}`} className='btn btn-sm btn-success mx-2'>View</Link>
                                     </td>
                                 </tr>
