@@ -1,0 +1,8 @@
+https://www.youtube.com/watch?v=enOsPhp2Z6Q
+
+
+npm init vite
+npm install
+npm run dev
+npm install boostrap axios react-router-dom react-hot-toast
+react-bootstrap //for pagination

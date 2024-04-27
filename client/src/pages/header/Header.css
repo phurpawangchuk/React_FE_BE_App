@@ -1,0 +1,33 @@
+.nav {
+    background-color: rgb(55, 53, 50);
+    justify-content: flex-end;
+    padding: 20px;
+    width: 100%;
+    color: #fff;
+}
+
+.nav ul {
+    display: flex;
+    column-gap: 5%;
+    list-style-type: none;
+    cursor: pointer;
+    margin-right: 5%;
+}
+
+.link {
+    text-decoration: none;
+    color: #fff;
+}
+
+.link:hover {
+    color: #d2cbcb;
+}
+
+.avatar {
+    height: 40px;
+    width: 50px;
+    border-radius: 50%;
+    position: absolute;
+    margin-left: -50px;
+    margin-top: -5px;
+}
