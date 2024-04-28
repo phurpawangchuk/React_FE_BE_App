@@ -1,16 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
-import axios from 'axios';
+import api from '../../api/axios';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
 function UpdatePost() {
     const { id } = useParams();
-    const [title, setTitle] = useState(' ');
-    const [content, setContent] = useState('');
-    const [imageUrl, setImageUrl] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
+
+    const [image, setImage] = useState(null);
+    const [userData, setUserData] = useState({
+        title: '',
+        content: '',
+        image: ''
+    });
+
+
 
     useEffect(() => {
         fetchPosts();
@@ -18,57 +24,66 @@ function UpdatePost() {
 
     const fetchPosts = async () => {
         try {
-            const result = await axios.get(`http://localhost:3000/api/posts/${id}`,
+            const result = await api.get(`/posts/${id}`,
                 {
                     headers: {
                         Authorization: 'Bearer ' + localStorage.getItem('token')
                     }
                 });
-            const userData = result.data.post;
-            setTitle(userData.title);
-            setContent(userData.content);
-            setImageUrl(userData.age);
+            setUserData(result.data.post);
+            // setTitle(userData.title);
+            //setContent(userData.content);
         } catch (error) {
             console.error('Error fetching post:', error);
         }
     };
 
 
-    const handleTitleChange = (event) => {
-        setTitle(event.target.value);
-    };
+    const handleInput = (event) => {
+        const { name, value, type } = event.target;
 
-    const handleContentChange = (event) => {
-        setContent(event.target.value);
-    };
-
-    const handleImageChange = (event) => {
-        setImageUrl(event.target.value);
-    };
+        if (type === 'file') {
+            // Handle image file input
+            const file = event.target.files[0];
+            setImage(event.target.files[0]);
+            setUserData((prevValues) => ({
+                ...prevValues,
+                [name]: file
+            }));
+        } else {
+            // Handle regular input fields
+            setUserData((prevValues) => ({
+                ...prevValues,
+                [name]: value
+            }));
+        }
+    }
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        if (!title || !content) {
+        if (!userData.title || !userData.content) {
             setError('Please fill in all fields.');
             return;
         }
-        axios.put(`http://localhost:3000/api/posts/${id}`, {
-            title, content, imageUrl, creator: localStorage.getItem('userId')
-        }, {
-                headers: {
-                    Authorization: 'Bearer ' + localStorage.getItem('token')
-                }
-            })
-            .then(result => {
-                toast.success("Data updated successfully");
-                console.log(result)
-                navigate('/post');
-            })
-            .catch(err => {
-                toast.error("Error:" + err.message);
-                //  setError('An error occurred while updating the post.');
-                console.log(err);
-            });
+
+        const formData = new FormData();
+        formData.append('title', userData.title);
+        formData.append('content', userData.content);
+        formData.append('creator', localStorage.getItem('userId'));
+        formData.append('image', image);
+
+        api.put(`/posts/${id}`, formData, {
+            headers: {
+                Authorization: 'Bearer ' + localStorage.getItem('token')
+            }
+        }).then(result => {
+            toast.success("Data updated successfully");
+            console.log(result)
+            navigate('/post');
+        }).catch(err => {
+            toast.error("Error:" + err.message);
+            console.log(err);
+        });
     };
 
     return (
@@ -81,11 +96,11 @@ function UpdatePost() {
                         <label htmlFor="title">Title</label>
                         <input
                             type="text"
-                            id="title"
+                            name="title"
                             placeholder='Enter title'
-                            value={title}
+                            value={userData.title}
                             className='form-control'
-                            onChange={handleTitleChange}
+                            onChange={handleInput}
                             required
                         />
                     </div>
@@ -94,14 +109,31 @@ function UpdatePost() {
                         <label htmlFor="content">Content</label>
                         <textarea
                             type="content"
-                            id="content"
+                            name="content"
                             placeholder='Enter content'
-                            value={content}
+                            value={userData.content}
                             className='form-control'
-                            onChange={handleContentChange}
+                            onChange={handleInput}
                             required
                         />
                     </div>
+
+                    <div className="mb-2">
+                        <label htmlFor="image">Avatar</label>
+                        <input
+                            type="file"
+                            name="image"
+                            className='form-control'
+                            accept="image/*"
+                            onChange={handleInput}
+                        />
+                    </div>
+
+                    {image && (
+                        <div>
+                            <img src={URL.createObjectURL(image)} alt="Selected" width="200" />
+                        </div>
+                    )}
 
                     <div className="mb-2">
                         <button type="submit" className='btn btn-success'>Update</button>

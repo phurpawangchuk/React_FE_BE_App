@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../api/axios';
 import toast from 'react-hot-toast';
 import AuthContext from '../../context/authContext';
 import CustomPagination from '../../util/Pagination';
@@ -28,7 +28,7 @@ function User() {
 
     const fetchUsers = async () => {
         try {
-            const response = await axios.get('http://localhost:3000/api/users/', {
+            const response = await api.get('/users/', {
                 headers: {
                     Authorization: 'Bearer ' + loggedInData.userToken
                 }
@@ -53,7 +53,7 @@ function User() {
     const handleDelete = ((id) => {
         const confirm = window.confirm("Do you want to delete?");
         if (confirm) {
-            axios.delete(`http://localhost:3000/api/users/${id}`,
+            api.delete(`/users/${id}`,
                 {
                     headers: {
                         Authorization: 'Bearer ' + loggedInData.userToken

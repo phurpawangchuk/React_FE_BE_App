@@ -1,9 +1,7 @@
 import React, { useState, useContext } from 'react';
-import axios from 'axios';
 import toast from 'react-hot-toast';
-import AuthContext from '../../context/authContext';
 import { useNavigate } from 'react-router';
-import UserContext from '../../context/authContext';
+import api from '../../api/axios';
 
 function Login() {
     const [email, setEmail] = useState('admin@gmail.com');
@@ -37,7 +35,7 @@ function Login() {
         }
 
         // Proceed with login
-        axios.post('http://localhost:3000/api/users/auth', {
+        api.post('/users/auth', {
             email: email,
             password: password
         })
@@ -48,7 +46,7 @@ function Login() {
                 localStorage.setItem('username', res.data.username);
                 toast.success("Login successful");
                 window.location.reload(); // Reload the page
-                window.location.href = '/'; // Redirect to the home page
+                window.location.href = '/user'; // Redirect to the home page
             })
             .catch(err => {
                 console.error("Error: ", err);

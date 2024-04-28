@@ -1,8 +1,8 @@
 const Post = require('../model/post');
 const User = require('../model/user');
 const { validationResult } = require('express-validator');
-const jwt = require('jsonwebtoken');
-const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
 const createPost = async (req, res, next) => {
 
@@ -16,7 +16,7 @@ const createPost = async (req, res, next) => {
     }
 
     try {
-        const { title, content, image, userId } = req.body;
+        const { title, content, userId } = req.body;
         const post = new Post({
             title: title,
             content: content,
@@ -30,9 +30,8 @@ const createPost = async (req, res, next) => {
         }
 
         await post.save();
-        user.posts.push(post);
-        await user.save();
-
+        // user.posts.push(post);
+        // await user.save();
         res.status(201).json({ post, message: 'Post created successfully' });
     } catch (error) {
         console.error('Error creating post:', error);
@@ -44,7 +43,10 @@ const createPost = async (req, res, next) => {
 const getAllPosts = async (req, res) => {
     try {
         // const posts = await Post.find({ published: true }).populate('creator');;
-        const posts = await Post.find({}).populate('creator');;
+        // const posts = await Post.find({}).populate('creator');
+        // const posts = await Post.find({});
+        const posts = await Post.find({}).populate('creator', 'name email age');
+
         res.status(200).json({ posts, message: 'Posts retrieved successfully' });
     } catch (error) {
         console.error('Error fetching Posts:', error);
@@ -69,7 +71,6 @@ const getPost = async (req, res) => {
 const updatePost = async (req, res) => {
     const id = req.params.id;
     try {
-
         //validate creator and requested userId
         const post = await Post.findById({ _id: id });
         if (post.creator != req.body.creator) {
@@ -77,31 +78,19 @@ const updatePost = async (req, res) => {
                 message: 'Post do not belong to you.'
             })
         }
-
-        // Find the post by its ID and update its fields
-        const updatedPost = await Post.findByIdAndUpdate(id, req.body, { new: true });
-        if (!updatedPost) {
-            return res.status(404).json({ message: 'Post not found' });
+        if (req.file) {
+            if (fs.existsSync(path.join('public/uploads', post.image))) {
+                fs.unlinkSync(path.join('public/uploads', post.image));
+            }
+            post.image = req.file.filename;
         }
 
-        // If the post is successfully updated, you might want to update the corresponding user's posts array
-        // Assuming each post has a creator field containing the user's ID
-        const userId = updatedPost.creator;
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
+        post.title = req.body.title;
+        post.content = req.body.content;
+        post.creator = req.body.creator;
 
-        // Update the user's posts array to reflect the changes
-        const index = user.posts.findIndex(post => post._id === id);
-
-        if (index !== -1) {
-            user.posts[index] = updatedPost;
-        } else {
-            user.posts.push(updatedPost);
-        }
-        await user.save();
-
+        // Save the updated post
+        const updatedPost = await post.save();
         res.status(200).json({ updatedPost, message: 'Post updated successfully' });
     } catch (error) {
         console.error('Failed to update post:', error);
@@ -112,13 +101,14 @@ const updatePost = async (req, res) => {
 const deletePost = async (req, res) => {
     const id = req.params.id;
     try {
-        let post = await Post.findById(id);
+        //let post = await Post.findById(id);
+        let post = await Post.findByIdAndDelete(id);
         if (!post) {
             return res.status(404).json({ message: 'Post not found' });
         }
-        post.published = !post.published;
-        // Save the updated post
-        post = await post.save();
+        // post.published = !post.published;
+        // // Save the updated post
+        // post = await post.save();
         const posts = await Post.find({});
 
         res.status(200).json({ posts, message: 'Post deleted successfully' });

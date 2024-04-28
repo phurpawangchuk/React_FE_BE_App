@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../api/axios';
 import toast from 'react-hot-toast';
 
 function CreateUser() {
@@ -46,7 +45,7 @@ function CreateUser() {
             return;
         }
 
-        axios.post("http://localhost:3000/api/users/", {
+        api.post("/users/", {
             name: name,
             email: email,
             age: age,
@@ -59,7 +58,7 @@ function CreateUser() {
             .then(result => {
                 console.log(result.data);
                 toast.success("Data created successfully");
-                navigate('/');
+                navigate('/user');
             })
             .catch(err => {
                 let errorMessage = '';

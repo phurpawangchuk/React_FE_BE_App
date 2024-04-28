@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
-import axios from 'axios';
+import api from '../../api/axios';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
@@ -15,7 +15,7 @@ function UpdateUser() {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const result = await axios.get(`http://localhost:3000/api/users/${id}`,
+                const result = await api.get(`/users/${id}`,
                     {
                         headers: {
                             Authorization: 'Bearer ' + localStorage.getItem('token')
@@ -52,7 +52,7 @@ function UpdateUser() {
             setError('Please fill in all fields.');
             return;
         }
-        axios.put(`http://localhost:3000/api/users/${id}`, {
+        api.put(`/users/${id}`, {
             name, email, age
         }, {
                 headers: {

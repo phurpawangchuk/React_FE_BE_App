@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { Link, Navigate } from 'react-router-dom';
-import axios from 'axios';
+import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import AuthContext from '../../context/authContext';
-import PostContext from '../../context/postContext';
+import api from '../../api/axios';
 
 function Post() {
 
@@ -30,17 +29,14 @@ function Post() {
 
     const fetchposts = async () => {
         try {
-            await axios.get('http://localhost:3000/api/posts/', {
+            const response = await api.get('/posts/', {
                 headers: {
                     Authorization: 'Bearer ' + userLogInData.userToken
                 }
-            })
-                .then((response) => {
-                    console.log(response.data.posts)
-                    setData(response.data.posts);
-                    setPostDetail(response.data.posts);
-                })
-
+            });
+            console.log(response.data.posts);
+            setData(response.data.posts);
+            setPostDetail(response.data.posts);
         } catch (error) {
             toast.error("Login to access the posts");
             console.error('Unauthorised');
@@ -50,27 +46,41 @@ function Post() {
     const Filter = ((event) => {
         setFilterData(data.filter(f => f.title.toLowerCase().includes(event.target.value)));
     });
+    const handleDelete = (id) => {
+        const userId = localStorage.getItem('userId');
+        if (!userId) {
+            console.error('User ID not found in localStorage');
+            return;
+        }
 
-    const handleDelete = ((id) => {
-        console.log(localStorage.getItem('userId'))
+        const confirmDeletion = window.confirm("Do you want to delete?");
+        if (!confirmDeletion) {
+            return;
+        }
 
-        const confirm = window.confirm("Do you want to delete?");
-        if (confirm) {
-            axios.delete(`http://localhost:3000/api/posts/${id}`,
-                {
-                    headers: {
-                        Authorization: 'Bearer ' + userLogInData.userToken
-                    }
-                })
-                .then((res) => {
+        api.delete(`/posts/${id}`, {
+            headers: {
+                Authorization: 'Bearer ' + userLogInData.userToken
+            }
+        })
+            .then((res) => {
+                if (res.data && res.data.posts) {
                     setPosts(res.data.posts);
                     toast.success("Deleted successfully");
-                }).catch(err => {
-                    toast.error("Unauthorized to data.");
-                    console.error('Unauthorized.');
-                });
-        }
-    });
+                } else {
+                    console.error('Unexpected response format:', res.data);
+                    toast.error("Failed to delete post. Unexpected response format.");
+                }
+            })
+            .catch(err => {
+                if (err.response && err.response.status === 401) {
+                    toast.error("Unauthorized access.");
+                } else {
+                    toast.error("Failed to delete post. Please try again later.");
+                }
+                console.error('Error deleting post:', err);
+            });
+    };
 
     return (
         <div className="table-bordered">

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
 import toast from 'react-hot-toast';
+import api from '../../api/axios';
 
 function CreatePost() {
     const [error, setError] = useState('');
@@ -48,21 +48,17 @@ function CreatePost() {
         formData.append('userId', localStorage.getItem('userId'));
         formData.append('image', image);
 
-        console.log(formData);
-
-        axios.post("http://localhost:3000/api/posts/", formData, {
+        api.post("/posts/", formData, {
             headers: {
                 Authorization: 'Bearer ' + localStorage.getItem('token')
             }
-        })
-            .then(result => {
-                console.log(result.data);
-                toast.success("Data created successfully");
-                navigate('/post');
-            })
-            .catch(err => {
-                toast.error("Errors:\n" + err);
-            });
+        }).then(result => {
+            console.log(result.data);
+            toast.success("Data created successfully");
+            navigate('/post');
+        }).catch(err => {
+            toast.error("Errors:\n" + err);
+        });
     }
 
     return (
