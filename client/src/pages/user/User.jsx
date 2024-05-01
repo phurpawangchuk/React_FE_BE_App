@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
 import toast from 'react-hot-toast';
 import AuthContext from '../../context/authContext';
 import CustomPagination from '../../util/Pagination';
+import Axios from 'axios';
 
 function User() {
 
@@ -14,6 +15,9 @@ function User() {
     const [data, setData] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(3);
+
+    const navigate = useNavigate();
+    Axios.defaults.withCredentials = true;
 
     useEffect(() => {
         fetchUsers();
@@ -35,8 +39,10 @@ function User() {
             });
             setData(response.data.users);
         } catch (error) {
+            localStorage.setItem('timeout', true);
             toast.error("Login to access the users");
             console.error('Unauthorized.');
+            navigate('/');
         }
     };
 
@@ -71,7 +77,7 @@ function User() {
     });
 
     return (
-        <div className="table-bordered">
+        <div className="card bg-body-secondary">
             <div className='flex-column justify-content-center align-items-center'>
                 <div className='d-flex justify-content-end m-3'>
                     <input type='text'

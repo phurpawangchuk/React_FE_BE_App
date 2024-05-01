@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router();
-const { createUser, getAllUsers, getUser, login, updateUser, deleteUser } = require('../controller/userController')
+const { createUser, getAllUsers, getUser, login, register, updateUser, deleteUser } = require('../controller/userController')
 const { body } = require('express-validator');
 const User = require('../model/user');
 const isAuth = require('../middleware/is-auth');
@@ -31,6 +31,8 @@ router.get('/:id', isAuth, getUser);
 router.put('/:id', isAuth, updateUser);
 router.delete('/:id', isAuth, deleteUser);
 router.post('/auth', login);
+router.post('/register', register);
+
 
 module.exports = router;
 

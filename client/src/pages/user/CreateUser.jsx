@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import api from '../../api/axios';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router';
+import { Link } from 'react-router-dom';
 
 function CreateUser() {
     const [name, setName] = useState('app');
@@ -84,10 +86,10 @@ function CreateUser() {
     };
 
     return (
-        <div className="d-flex vh-100 bg-primary justify-content-center align-items-center">
-            <div className="w-50 bg-white rounded p-3">
+        <div className="d-flex bg-body-secondary justify-content-center align-items-center min-vh-80">
+            <div className="card shadow bg-white rounded col-md-4">
                 <form onSubmit={handleSubmit}>
-                    <h2>Add User</h2>
+                    <h2>Register New User</h2>
                     {error && <div className="alert alert-danger">{error}</div>}
                     <div className="mb-2">
                         <label htmlFor="name">Name</label>

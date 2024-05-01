@@ -7,8 +7,8 @@ const isAuth = require('../middleware/is-auth');
 router.post('/', isAuth, [
     body('title').trim().isLength({ min: 5 })
         .withMessage('Title field must be minimum of 5 characters'),
-    body('content').trim().isLength({ max: 200 })
-        .withMessage('Content must be correct.'),
+    body('content').trim().isLength({ min: 5 })
+        .withMessage('Content must be between 5 to 100 characters.'),
 ], createPost);
 
 

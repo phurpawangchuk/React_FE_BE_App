@@ -10,8 +10,7 @@ function CreatePost() {
     const [image, setImage] = useState(null);
     const [userData, setUserData] = useState({
         title: '',
-        content: '',
-        image: ''
+        content: ''
     });
 
     const handleInput = (event) => {
@@ -53,11 +52,25 @@ function CreatePost() {
                 Authorization: 'Bearer ' + localStorage.getItem('token')
             }
         }).then(result => {
-            console.log(result.data);
+            // console.log(result.data);
             toast.success("Data created successfully");
             navigate('/post');
         }).catch(err => {
-            toast.error("Errors:\n" + err);
+            if (err.response && err.response.data && err.response.data.errors) {
+                const errorMessages = err.response.data.errors.map((error, index) => (
+                    <div key={index}>
+                        {error}
+                    </div>
+                ));
+                toast.error(
+                    <div>
+                        {errorMessages}
+                    </div>
+                );
+
+            } else {
+                toast.error("An error occurred. Please try again later.");
+            }
         });
     }
 

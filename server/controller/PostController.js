@@ -9,18 +9,23 @@ const createPost = async (req, res, next) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
+        const errorMessages = errors.array().map(error => error.msg);
         return res.status(422).json({
             message: 'Validation failed.',
-            errors: errors.array()
+            errors: errorMessages
         });
     }
 
     try {
         const { title, content, userId } = req.body;
+        const attachmentFile = null;
+        if (req.file != null) {
+            attachmentFile = req.file.filename
+        }
         const post = new Post({
             title: title,
             content: content,
-            image: req.file.filename,
+            image: attachmentFile,
             creator: userId
         });
 
@@ -38,7 +43,6 @@ const createPost = async (req, res, next) => {
         res.status(500).json({ message: 'Failed to create post' });
     }
 }
-
 
 const getAllPosts = async (req, res) => {
     try {

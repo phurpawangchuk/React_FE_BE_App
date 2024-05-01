@@ -26,17 +26,24 @@ const login = async (req, res, next) => {
                 });
             }
 
-            const token = jwt.sign(
-                {
-                    email: loadedUser.email,
-                    userId: loadedUser._id.toString()
-                },
-                'secretkeyhere',
-                { expiresIn: '1h' }
-            );
+            const accessToken = jwt.sign({ email: email, userId: loadedUser._id.toString() },
+                "secretkeyhere", { expiresIn: '15m' })
+
+            const refreshToken = jwt.sign({ email: email },
+                "jwt-refresh-token-secret-key", { expiresIn: '5m' })
+
+            res.cookie('accessToken', accessToken, { maxAge: 60000 })
+
+            res.cookie('refreshToken', refreshToken, {
+                maxAge: 300000,
+                httpOnly: true,  // Set httpOnly to true
+                secure: true,
+                sameSite: 'strict'
+            });
 
             return res.status(200).json({
-                token: token,
+                accessToken,
+                refreshToken,
                 username: loadedUser.name,
                 userId: loadedUser._id.toString()
             })
@@ -44,6 +51,26 @@ const login = async (req, res, next) => {
         .catch(error => {
             res.status(500).json({ message: 'Validation of fields failed.Error:' + error });
         })
+}
+
+const register = async (req, res, next) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return res.status(422).json({
+            message: 'Validation failed.',
+            errors: errors.array()
+        });
+    }
+    try {
+        const { name, email, age, password } = req.body;
+        const hashedPassword = await bcrypt.hash(password, 12);
+
+        const user = await User.create({ name, email, age, password: hashedPassword });
+        res.status(201).json({ user, message: 'User created successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Validation of fields failed.Error:' + error });
+    }
 }
 
 const createUser = async (req, res, next) => {
@@ -118,4 +145,4 @@ const deleteUser = async (req, res) => {
     }
 }
 
-module.exports = { createUser, getAllUsers, getUser, updateUser, deleteUser, login };
+module.exports = { createUser, getAllUsers, getUser, updateUser, deleteUser, login, register };

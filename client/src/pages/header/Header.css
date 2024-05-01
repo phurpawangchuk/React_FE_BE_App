@@ -31,3 +31,7 @@
     margin-left: -50px;
     margin-top: -5px;
 }
+
+.min-vh-80 {
+    min-height: 80vh;
+}

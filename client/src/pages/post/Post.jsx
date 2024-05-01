@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import AuthContext from '../../context/authContext';
 import api from '../../api/axios';
@@ -16,6 +16,8 @@ function Post() {
 
     const [postDetail, setPostDetail] = useState();
 
+    const navigate = useNavigate();
+
     useEffect(() => {
         fetchposts();
     }, [posts]); // Empty dependency array to run the effect only once
@@ -24,28 +26,32 @@ function Post() {
         const startIndex = (currentPage - 1) * itemsPerPage;
         const endIndex = startIndex + itemsPerPage;
         setFilterData(data.slice(startIndex, endIndex));
-    }, [data, currentPage, itemsPerPage]);
+    }, [posts, data, currentPage, itemsPerPage]);
 
 
     const fetchposts = async () => {
         try {
-            const response = await api.get('/posts/', {
-                headers: {
-                    Authorization: 'Bearer ' + userLogInData.userToken
-                }
-            });
+            const response = await api.get('/posts/',
+                {
+                    headers: {
+                        Authorization: 'Bearer ' + userLogInData.userToken
+                    }
+                });
             console.log(response.data.posts);
             setData(response.data.posts);
             setPostDetail(response.data.posts);
         } catch (error) {
+            localStorage.setItem('timeout', true);
             toast.error("Login to access the posts");
-            console.error('Unauthorised');
+            console.error('Unauthorised..', error);
+            navigate('/');
         }
     };
 
     const Filter = ((event) => {
         setFilterData(data.filter(f => f.title.toLowerCase().includes(event.target.value)));
     });
+
     const handleDelete = (id) => {
         const userId = localStorage.getItem('userId');
         if (!userId) {
@@ -83,7 +89,7 @@ function Post() {
     };
 
     return (
-        <div className="table-bordered">
+        <div className="card bg-body-secondary">
             <div className='flex-column justify-content-center align-items-center'>
                 <div className='d-flex justify-content-end m-3'>
                     <input type='text'

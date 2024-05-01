@@ -2,6 +2,8 @@ import React, { useState, useContext } from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router';
 import api from '../../api/axios';
+import Axios from "axios";
+
 
 function Login() {
     const [email, setEmail] = useState('admin@gmail.com');
@@ -9,6 +11,8 @@ function Login() {
     const [error, setError] = useState(null);
 
     // const userData = useContext(UserContext);
+
+    Axios.defaults.withCredentials = true;
 
     const handlePasswordChange = (event) => {
         setPassword(event.target.value);
@@ -40,23 +44,27 @@ function Login() {
             password: password
         })
             .then((res) => {
-                console.log("Response: ", res.data.token);
-                localStorage.setItem('token', res.data.token)
+                console.log("Response: ", res.data.accessToken);
+                localStorage.setItem('token', res.data.accessToken)
+                localStorage.setItem('refeshtoken', res.data.refreshToken)
                 localStorage.setItem('userId', res.data.userId)
                 localStorage.setItem('username', res.data.username);
                 toast.success("Login successful");
-                window.location.reload(); // Reload the page
-                window.location.href = '/user'; // Redirect to the home page
+                localStorage.setItem('timeout', false);
+                navigate('/');
+                // window.location.reload(); // Reload the page
+                // window.location.href = '/user'; // Redirect to the home page
             })
             .catch(err => {
+                localStorage.setItem('timeout', true);
                 console.error("Error: ", err);
                 toast.error("Error: Unable to login");
             });
     };
 
     return (
-        <div className="d-flex vh-100 bg-primary justify-content-center align-items-center">
-            <div className="bg-white table-responsive rounded p-3">
+        <div className="d-flex bg-body-secondary justify-content-center align-items-center min-vh-80">
+            <div className="card-title card shadow bg-white table-responsive rounded col-md-4 m-5">
                 <form onSubmit={loginHandle}>
                     <h2>Login User</h2>
                     <div className="mb-2">

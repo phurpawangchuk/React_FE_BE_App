@@ -16,8 +16,6 @@ function UpdatePost() {
         image: ''
     });
 
-
-
     useEffect(() => {
         fetchPosts();
     }, [id]);

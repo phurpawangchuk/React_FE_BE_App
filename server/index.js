@@ -8,8 +8,17 @@ const multer = require('multer');
 // const csrf = require('csurf');
 const app = express()
 const path = require('path');
+const cookieParser = require('cookie-parser');
 
-app.use(cors())
+const mysql = require('mysql2');
+
+app.use(cookieParser())
+
+app.use(cors({
+    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
+    credentials: true
+}))
+// app.use(cors())
 app.use(express.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 
@@ -34,7 +43,6 @@ app.use('/api/users', userRoute);
 app.use('/api/posts', upload.single('image'), postRoute);
 
 // app.use(csrfProtection);
-
 mongoose.connect("mongodb+srv://phurpawangchuk20:WbAYAnfpLtNhejQw@ReactAppDB.e47qdme.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
     .then(() => {
         console.log("Connected to MongoDB Atlas");
@@ -45,4 +53,28 @@ mongoose.connect("mongodb+srv://phurpawangchuk20:WbAYAnfpLtNhejQw@ReactAppDB.e47
     .catch((error) => {
         console.log("Connection failed:", error.message);
     });
+
+
+    /*//MySQL connection
+const pool = mysql.createPool({
+    connectionLimit: 10,
+    host: 'localhost',
+    user: 'user',
+    password: 'password',
+    database: 'CS422DB',
+    port: 3308
+});
+
+pool.getConnection((err, connection) => {
+    if (err) {
+        console.error('Error getting connection from pool:', err);
+        return;
+    }
+    console.log("COnnected ..", connection)
+    // connection.query('SELECT * FROM your_table', (error, results, fields) => {
+    //     // Handle query results
+    //     connection.release(); // Release the connection back to the pool
+    // });
+});
+*/
 

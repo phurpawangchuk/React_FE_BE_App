@@ -15,6 +15,7 @@ import CreatePost from './pages/post/CreatePost';
 import UpdatePost from './pages/post/UpdatePost';
 import AuthContext from './context/authContext';
 import Home from './pages/home/Home';
+import Register from './pages/auth/Register';
 
 function App() {
 
@@ -30,6 +31,7 @@ function App() {
             <Route path="/" element={<Home />} />
 
             <Route path="/auth" element={<Login />} />
+            <Route path="/register" element={<Register />} />
 
             <Route path='/user' element={<User />} />
             <Route path='/user/create' element={<CreateUser />} />
