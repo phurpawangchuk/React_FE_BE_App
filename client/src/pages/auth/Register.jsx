@@ -1,57 +1,50 @@
 import React, { useState } from 'react';
-import api from '../../api/axios';
+import api from '../../api/api';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
 
 function Register() {
-    const [name, setName] = useState('app');
-    const [email, setEmail] = useState('test@cc.com');
-    const [age, setAge] = useState('34');
-    const [password, setPassword] = useState('12345');
+    const [form, setForm] = useState({
+        name: "",
+        email: "",
+        age: "",
+        password: ""
+    });
+
     const [error, setError] = useState('');
 
     const navigate = useNavigate();
     const [formValid, setFormValid] = useState(false); // State variable to track form validity
 
-    const handleNameChange = (event) => {
-        setName(event.target.value);
-        validateForm();
+    const handleChange = e => {
+        setForm((prev) => ({
+            ...prev,
+            [e.target.name]: e.target.value
+        }));
     };
 
-    const handlePasswordChange = (event) => {
-        setPassword(event.target.value);
-        validateForm();
-    };
-
-    const handleEmailChange = (event) => {
-        setEmail(event.target.value);
-        validateForm();
-    };
-
-    const handleAgeChange = (event) => {
-        setAge(event.target.value);
-        validateForm();
-    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        if (!name || !email) {
+        console.log(form);
+
+        if (!form.name || !form.email) {
             setError('Please fill in all fields.');
             return;
         }
 
-        if (!validateEmail(email)) {
+        if (!validateEmail(form.email)) {
             setError('Please enter a valid email address.');
             return;
         }
 
-        api.post("/users/register", {
-            name: name,
-            email: email,
-            age: age,
-            password: password
+        api.post("/smartcard/register", {
+            name: form.name,
+            email: form.email,
+            age: form.age,
+            password: form.password
         })
             .then(result => {
                 console.log(result.data);
@@ -88,11 +81,10 @@ function Register() {
                         <label htmlFor="name">Name</label>
                         <input
                             type="text"
-                            id="name"
+                            name="name"
                             placeholder='Enter Name'
                             className={`form-control ${!name && error ? 'is-invalid' : 'is-valid'}`}
-                            value={name}
-                            onChange={handleNameChange}
+                            onChange={handleChange}
                         />
                     </div>
 
@@ -100,11 +92,10 @@ function Register() {
                         <label htmlFor="email">Email</label>
                         <input
                             type="email"
-                            id="email"
+                            name="email"
                             placeholder='Enter email'
-                            className={`form-control ${(!email || !validateEmail(email)) && error ? 'is-invalid' : 'is-valid'}`}
-                            value={email}
-                            onChange={handleEmailChange}
+                            className={`form-control ${(!form.email || !validateEmail(form.email)) && error ? 'is-invalid' : 'is-valid'}`}
+                            onChange={handleChange}
                         />
                     </div>
 
@@ -112,11 +103,11 @@ function Register() {
                         <label htmlFor="password">Password</label>
                         <input
                             type="password"
-                            id="password"
+                            name="password"
                             placeholder='Enter password'
-                            className={`form-control ${(!password) && error ? 'is-invalid' : 'is-valid'}`}
-                            value={password}
-                            onChange={handlePasswordChange}
+                            autoComplete="current-password"
+                            className={`form-control ${(!form.password) && error ? 'is-invalid' : 'is-valid'}`}
+                            onChange={handleChange}
                         />
                     </div>
 
@@ -124,11 +115,10 @@ function Register() {
                         <label htmlFor="age">Age</label>
                         <input
                             type="number"
-                            id="age"
+                            name="age"
                             placeholder='Enter Age'
-                            className={`form-control ${!age && error ? 'is-invalid' : 'is-valid'}`}
-                            value={age}
-                            onChange={handleAgeChange}
+                            className={`form-control ${!form.age && error ? 'is-invalid' : 'is-valid'}`}
+                            onChange={handleChange}
                         />
                     </div>
 

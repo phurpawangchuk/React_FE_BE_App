@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
-import api from '../../api/axios';
+import api from '../../api/api';
 import toast from 'react-hot-toast';
 import AuthContext from '../../context/authContext';
 import CustomPagination from '../../util/Pagination';

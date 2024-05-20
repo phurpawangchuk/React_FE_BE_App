@@ -16,19 +16,30 @@ import UpdatePost from './pages/post/UpdatePost';
 import AuthContext from './context/authContext';
 import Home from './pages/home/Home';
 import Register from './pages/auth/Register';
+import Footer from './pages/footer/footer';
+import Contact from './pages/contact/contact';
+import Track from './pages/track/Track';
+import OnlineApplication from './pages/applicantion/application';
+import Pending from './pages/applicantion/pending';
+import ApplicationDetails from './pages/applicantion/details';
 
 function App() {
 
   const [userToken, setUserToken] = useState(localStorage.getItem('token'));
 
   return (
-    <div>
+    <div className="bg-color">
       <AuthContext.Provider value={{ userToken, setUserToken }}>
         <BrowserRouter>
           <Header />
           <Routes>
 
             <Route path="/" element={<Home />} />
+            <Route path='/contact' element={<Contact />} />
+            <Route path='/track' element={<Track />} />
+            <Route path='/application' element={<OnlineApplication />} />
+            <Route path='/pending' element={<Pending />} />
+            <Route path='/pending/:id' element={<ApplicationDetails />} />
 
             <Route path="/auth" element={<Login />} />
             <Route path="/register" element={<Register />} />
@@ -46,6 +57,7 @@ function App() {
 
           </Routes>
           <Toaster />
+          <Footer />
         </BrowserRouter>
       </AuthContext.Provider>
 

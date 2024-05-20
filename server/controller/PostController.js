@@ -18,7 +18,9 @@ const createPost = async (req, res, next) => {
 
     try {
         const { title, content, userId } = req.body;
-        const attachmentFile = null;
+        let attachmentFile = null;
+        console.log(req.file.filename)
+
         if (req.file != null) {
             attachmentFile = req.file.filename
         }
@@ -31,16 +33,14 @@ const createPost = async (req, res, next) => {
 
         const user = await User.findById(userId);
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(401).json({ message: 'User not found' });
         }
 
         await post.save();
-        // user.posts.push(post);
-        // await user.save();
-        res.status(201).json({ post, message: 'Post created successfully' });
+        return res.status(201).json({ post, message: 'Post created successfully' });
     } catch (error) {
         console.error('Error creating post:', error);
-        res.status(500).json({ message: 'Failed to create post' });
+        return res.status(401).json({ message: 'Failed to create post' });
     }
 }
 

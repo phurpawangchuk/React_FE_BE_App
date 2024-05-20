@@ -1,16 +1,36 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router';
-import api from '../../api/axios';
+import api from '../../api/api';
 import Axios from "axios";
 
 
 function Login() {
     const [email, setEmail] = useState('admin@gmail.com');
-    const [password, setPassword] = useState('admin');
+    const [password, setPassword] = useState('admin@gmail.com');
     const [error, setError] = useState(null);
 
+    const [count, setCount] = useState(0);
+
+
+    /* //Closure 
+    useEffect(() => {
+        //const idenifier = setInterval(() => {
+        setInterval(() => {
+            console.log("Intercal running");
+            // setCount(count + 1);
+            setCount((prev) => prev + 1);
+        }, 1000);
+
+        // return () => {
+        //     clearInterval(idenifier);
+        // };
+    }, []);
+
+    return <p>Count: {count}</p>
     // const userData = useContext(UserContext);
+*/
+
 
     Axios.defaults.withCredentials = true;
 
@@ -39,27 +59,29 @@ function Login() {
         }
 
         // Proceed with login
-        api.post('/users/auth', {
+
+
+        api.post('/users/auth', { //this is mongoodb
+            // api.post('/smartcard/auth', {
             email: email,
             password: password
-        })
-            .then((res) => {
-                console.log("Response: ", res.data.accessToken);
-                localStorage.setItem('token', res.data.accessToken)
-                localStorage.setItem('refeshtoken', res.data.refreshToken)
-                localStorage.setItem('userId', res.data.userId)
-                localStorage.setItem('username', res.data.username);
-                toast.success("Login successful");
-                localStorage.setItem('timeout', false);
-                navigate('/');
-                // window.location.reload(); // Reload the page
-                // window.location.href = '/user'; // Redirect to the home page
-            })
-            .catch(err => {
-                localStorage.setItem('timeout', true);
-                console.error("Error: ", err);
-                toast.error("Error: Unable to login");
-            });
+        }).then((res) => {
+
+            console.log("Response: ", res);
+
+            //console.log("Response: ", res.data.accessToken);
+            localStorage.setItem('token', res.data.accessToken)
+            localStorage.setItem('refeshtoken', res.data.refreshToken)
+            localStorage.setItem('userId', res.data.userId)
+            localStorage.setItem('username', res.data.username);
+            toast.success("Login successful");
+            localStorage.setItem('timeout', false);
+            navigate('/');
+        }).catch((err) => {
+            localStorage.setItem('timeout', true);
+            // console.error("Error: ", err);
+            toast.error(err.response.data.message);
+        });
     };
 
     return (
@@ -72,6 +94,7 @@ function Login() {
                         <input
                             type="email"
                             id="email"
+                            autoComplete="email"
                             placeholder='Enter email'
                             className={`form-control ${(!email || !validateEmail(email)) && error ? 'is-invalid' : 'is-valid'}`}
                             value={email}
@@ -90,6 +113,7 @@ function Login() {
                             placeholder='Enter password'
                             className={`form-control ${!password && error ? 'is-invalid' : 'is-valid'}`}
                             value={password}
+                            autoComplete="current-password"
                             onChange={handlePasswordChange}
                         />
                         {!password && error && (

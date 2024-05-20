@@ -1,26 +1,19 @@
 .nav {
     background-color: rgb(55, 53, 50);
-    justify-content: flex-end;
-    padding: 20px;
-    width: 100%;
-    color: #fff;
-}
-
-.nav ul {
     display: flex;
-    column-gap: 5%;
-    list-style-type: none;
-    cursor: pointer;
-    margin-right: 5%;
+    padding-right: 30px;
+    justify-content: end;
+    align-content: flex-end;
 }
 
 .link {
     text-decoration: none;
-    color: #fff;
+    color: #ece7e7;
+    cursor: pointer;
 }
 
 .link:hover {
-    color: #d2cbcb;
+    color: #c7c1c1;
 }
 
 .avatar {
@@ -32,6 +25,14 @@
     margin-top: -5px;
 }
 
+.min-vh-20 {
+    min-height: 20vh;
+}
+
 .min-vh-80 {
     min-height: 80vh;
+}
+
+.min-vh-50 {
+    min-height: 50vh;
 }

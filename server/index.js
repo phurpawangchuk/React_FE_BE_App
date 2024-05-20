@@ -5,6 +5,7 @@ const userRoute = require('./routes/route')
 const postRoute = require('./routes/post-route')
 const bodyParser = require('body-parser');
 const multer = require('multer');
+const smartCard = require('./routes/smart-card')
 // const csrf = require('csurf');
 const app = express()
 const path = require('path');
@@ -41,8 +42,23 @@ const upload = multer({ storage: storage });
 //routes
 app.use('/api/users', userRoute);
 app.use('/api/posts', upload.single('image'), postRoute);
+app.use('/api/smartcard', upload.single('filename'), smartCard);
+
+// app.use((error, req, res, next) => {
+//     console.error(err.stack);
+//     res.status(500).send('Something went wrong');
+// })
+const port = 8080
+app.listen(port, (error) => {
+    if (error) {
+        console.error(`Server failed to start on port ${port}:`, error);
+    } else {
+        console.log(`Server is listening on port ${port}`);
+    }
+});
 
 // app.use(csrfProtection);
+
 mongoose.connect("mongodb+srv://phurpawangchuk20:WbAYAnfpLtNhejQw@ReactAppDB.e47qdme.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
     .then(() => {
         console.log("Connected to MongoDB Atlas");
@@ -54,15 +70,22 @@ mongoose.connect("mongodb+srv://phurpawangchuk20:WbAYAnfpLtNhejQw@ReactAppDB.e47
         console.log("Connection failed:", error.message);
     });
 
-
-    /*//MySQL connection
+/*
+//MySQL connection
 const pool = mysql.createPool({
     connectionLimit: 10,
     host: 'localhost',
-    user: 'user',
-    password: 'password',
-    database: 'CS422DB',
-    port: 3308
+    user: 'root',
+    password: 'Root@123',
+    database: 'smartcard_smartcardregistration-db',
+    port: 3306
+    // //Docker
+    // connectionLimit: 10,
+    // host: 'localhost',
+    // user: 'user',
+    // password: 'password',
+    // database: 'CS422DB',
+    // port: 3308
 });
 
 pool.getConnection((err, connection) => {
@@ -70,11 +93,10 @@ pool.getConnection((err, connection) => {
         console.error('Error getting connection from pool:', err);
         return;
     }
-    console.log("COnnected ..", connection)
-    // connection.query('SELECT * FROM your_table', (error, results, fields) => {
-    //     // Handle query results
-    //     connection.release(); // Release the connection back to the pool
-    // });
+    app.listen(3000, () => {
+        console.log("Server is listening on port 3000");
+    });
 });
 */
+
 

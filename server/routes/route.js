@@ -26,6 +26,7 @@ router.post('/', isAuth, [
     body('age').trim().isLength({ max: 3 })
         .withMessage('Age must be correct.'),
 ], createUser);
+
 router.get('/', isAuth, getAllUsers);
 router.get('/:id', isAuth, getUser);
 router.put('/:id', isAuth, updateUser);

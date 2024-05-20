@@ -11,7 +11,6 @@ router.post('/', isAuth, [
         .withMessage('Content must be between 5 to 100 characters.'),
 ], createPost);
 
-
 router.get('/', isAuth, getAllPosts);
 router.get('/:id', isAuth, getPost);
 router.put('/:id', isAuth, updatePost);
